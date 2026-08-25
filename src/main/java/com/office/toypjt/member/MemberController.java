@@ -1,40 +1,125 @@
 package com.office.toypjt.member;
 
+import java.io.IOException;
+
+import jakarta.security.auth.message.callback.PrivateKeyCallback.Request;
+import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import jakarta.servlet.http.HttpSession;
 
-/**
- * Servlet implementation class MemberController
- */
+
 @WebServlet("*.mem")
 public class MemberController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
+   
+	private String CLASS_NAME = "[MemberController]";
+	
+	
     public MemberController() {
         super();
-        // TODO Auto-generated constructor stub
+     
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
+	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+		
+		String requestURI = request.getRequestURI();
+		String contextPath = request.getContextPath();
+		String command = requestURI.substring(contextPath.length());
+		String nextPage = null;
+		
+		MemberService memberService = null;
+		
+		switch (command) {
+		
+		// 회원가입
+		case MemberConfig.MEMBER_SIGNUP_FORM:
+			System.out.println(CLASS_NAME.concat(MemberConfig.MEMBER_SIGNUP_FORM));
+		
+			nextPage = generateViewName("member_signup_form");
+			
+			break;
+			
+		case MemberConfig.MEMBER_SIGNUP_CONFRIM :
+			System.out.println(CLASS_NAME.concat(MemberConfig.MEMBER_SIGNUP_CONFRIM));
+			memberService = new MemberService(new MemberDao());
+			
+			int result = memberService.userSignUpMember(request,response);
+			
+			if(result > 0) {
+				System.out.println(CLASS_NAME.concat("MEMBER SIGN UP SUCCESS!!"));
+				nextPage = generateViewName("member_signup_ok");
+				
+			} else {
+				System.out.println(CLASS_NAME.concat("MEMBER SIGN UP FAIL!!"));
+				nextPage = generateViewName("member_signup_ng");
+			}
+			
+			break;	
+		
+		// 로그인
+		case MemberConfig.MEMBER_SIGNIN_FORM:
+			System.out.println(CLASS_NAME.concat(MemberConfig.MEMBER_SIGNIN_FORM));
+			nextPage = generateViewName("member_signin_form");
+			
+			break;
+			
+		case MemberConfig.MEMBER_SIGNIN_CONFIRM:
+			System.out.println(CLASS_NAME.concat(MemberConfig.MEMBER_SIGNIN_CONFIRM));
+			memberService = new MemberService(new MemberDao());
+			
+			String signmemId = memberService.userSignInMember(request,response);
+			
+			if(signmemId != null) {
+				System.out.println(CLASS_NAME.concat("MEMBER SIGN IN SUCCESS!!"));
+				nextPage = generateViewName("member_sigin_ok!!");
+				
+				HttpSession session = request.getSession();
+				session.setAttribute(MemberConfig.SIGNINED_MEMBERID,signmemId);
+			
+			} else {
+				System.out.println(CLASS_NAME.concat("MEMBER SIGN IN FAIL!!"));
+				nextPage = generateViewName("member_sigin_ng!!");
+			}
+			
+			break;
+		
+		// 회원 정보 수정
+		case MemberConfig.MEMBER_MODIFY_FORM:
+			System.out.println(CLASS_NAME.concat(MemberConfig.MEMBER_MODIFY_FORM));
+			
+			memberService = new MemberService(new MemberDao());
+			
+			HttpSession session = request.getSession();
+			String signinedMemId = String.valueOf(session.getAttribute(MemberConfig.SIGNINED_MEMBERID));
+			
+			MemberDto currentSigninedMember = memberService.getcurrentSigninedMember()
+			
+			
+			nextPage = generateViewName("member_modify_form");
+			
+			break;
+		}
+		
+		RequestDispatcher dispatcher = request.getRequestDispatcher(nextPage);
+		dispatcher.forward(request, response);
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
+	
+	private String generateViewName(String string) {
+		
+		return null;
+	}
+
+
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
+		request.setCharacterEncoding("UTF-8");
+		
 		doGet(request, response);
 	}
 
