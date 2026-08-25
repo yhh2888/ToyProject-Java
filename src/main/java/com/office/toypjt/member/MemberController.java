@@ -124,6 +124,7 @@ public class MemberController extends HttpServlet {
 			
 			break;
 			
+		// 회원 정보 삭제
 		case MemberConfig.MEMBER_DELETE_FORM:
 			System.out.println(CLASS_NAME.concat(MemberConfig.MEMBER_DELETE_FORM));
 			nextPage = generateViewName("/delete_form");
