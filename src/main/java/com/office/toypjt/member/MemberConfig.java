@@ -3,16 +3,20 @@ package com.office.toypjt.member;
 public class MemberConfig {
 
 	// 회원가입
-	final static String MEMBER_SIGNUP_FORM = "/member_signup_form.mem";
-	final static String MEMBER_SIGNUP_CONFRIM = "/member_signup_confirm.mem";
+	final static String MEMBER_SIGNUP_FORM = "/signup_form.mem";
+	final static String MEMBER_SIGNUP_CONFRIM = "/signup_confirm.mem";
 	
 	// 로그인
-	final static String MEMBER_SIGNIN_FORM = "/member_signin_form.mem";
-	final static String MEMBER_SIGNIN_CONFIRM = "/member_signin_confirm.mem";
+	final static String MEMBER_SIGNIN_FORM = "/signin_form.mem";
+	final static String MEMBER_SIGNIN_CONFIRM = "/signin_confirm.mem";
 	
-	// 수정
-	final static String MEMBER_MODIFY_FORM = "/member_modify_form.mem";
-	final static String MEMBER_MODIFY_CONFIRM = "/member_modify_confirm.mem";
+	// 회원 정보 수정
+	final static String MEMBER_MODIFY_FORM = "/modify_form.mem";
+	final static String MEMBER_MODIFY_CONFIRM = "/modify_confirm.mem";
+	
+	// 회원 정보 삭제
+	final static String MEMBER_DELETE_FORM = "/delete_form.mem";
+	final static String MEMBER_DELETE_CONFIRM = "/delete_confirm.mem";
 	
 	// 저장된 아이디
 	final static String SIGNINED_MEMBERID = "signinedMemId";

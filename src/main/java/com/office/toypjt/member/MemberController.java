@@ -2,7 +2,6 @@ package com.office.toypjt.member;
 
 import java.io.IOException;
 
-import jakarta.security.auth.message.callback.PrivateKeyCallback.Request;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -41,23 +40,24 @@ public class MemberController extends HttpServlet {
 		case MemberConfig.MEMBER_SIGNUP_FORM:
 			System.out.println(CLASS_NAME.concat(MemberConfig.MEMBER_SIGNUP_FORM));
 		
-			nextPage = generateViewName("member_signup_form");
+			nextPage = generateViewName("/signup_form");
 			
 			break;
 			
 		case MemberConfig.MEMBER_SIGNUP_CONFRIM :
 			System.out.println(CLASS_NAME.concat(MemberConfig.MEMBER_SIGNUP_CONFRIM));
+			
 			memberService = new MemberService(new MemberDao());
 			
 			int result = memberService.userSignUpMember(request,response);
 			
 			if(result > 0) {
 				System.out.println(CLASS_NAME.concat("MEMBER SIGN UP SUCCESS!!"));
-				nextPage = generateViewName("member_signup_ok");
+				nextPage = generateViewName("/member_signup_ok");
 				
 			} else {
 				System.out.println(CLASS_NAME.concat("MEMBER SIGN UP FAIL!!"));
-				nextPage = generateViewName("member_signup_ng");
+				nextPage = generateViewName("/member_signup_ng");
 			}
 			
 			break;	
@@ -65,26 +65,27 @@ public class MemberController extends HttpServlet {
 		// 로그인
 		case MemberConfig.MEMBER_SIGNIN_FORM:
 			System.out.println(CLASS_NAME.concat(MemberConfig.MEMBER_SIGNIN_FORM));
-			nextPage = generateViewName("member_signin_form");
+			nextPage = generateViewName("/signin_form");
 			
 			break;
 			
 		case MemberConfig.MEMBER_SIGNIN_CONFIRM:
 			System.out.println(CLASS_NAME.concat(MemberConfig.MEMBER_SIGNIN_CONFIRM));
+			
 			memberService = new MemberService(new MemberDao());
 			
 			String signmemId = memberService.userSignInMember(request,response);
 			
 			if(signmemId != null) {
 				System.out.println(CLASS_NAME.concat("MEMBER SIGN IN SUCCESS!!"));
-				nextPage = generateViewName("member_sigin_ok!!");
+				nextPage = generateViewName("/member_sigin_ok");
 				
 				HttpSession session = request.getSession();
 				session.setAttribute(MemberConfig.SIGNINED_MEMBERID,signmemId);
 			
 			} else {
 				System.out.println(CLASS_NAME.concat("MEMBER SIGN IN FAIL!!"));
-				nextPage = generateViewName("member_sigin_ng!!");
+				nextPage = generateViewName("/member_sigin_ng");
 			}
 			
 			break;
@@ -96,12 +97,54 @@ public class MemberController extends HttpServlet {
 			memberService = new MemberService(new MemberDao());
 			
 			HttpSession session = request.getSession();
-			String signinedMemId = String.valueOf(session.getAttribute(MemberConfig.SIGNINED_MEMBERID));
+			String signinedMemberId = String.valueOf(session.getAttribute(MemberConfig.SIGNINED_MEMBERID));
 			
-			MemberDto currentSigninedMember = memberService.getcurrentSigninedMember()
+			MemberDto currentSigninedMember = memberService.getcurrentSigninedMember(signinedMemberId);
+			request.setAttribute("currentSigninedMember", currentSigninedMember);
+			
+			nextPage = generateViewName("/modify_form");
+			
+			break; 
+			
+		case MemberConfig.MEMBER_MODIFY_CONFIRM:
+			System.out.println(CLASS_NAME.concat(MemberConfig.MEMBER_MODIFY_CONFIRM));
+			
+			memberService = new MemberService(new MemberDao());
+			int resultForModifyMember = memberService.modifyMemberNo(request, response);
 			
 			
-			nextPage = generateViewName("member_modify_form");
+			if(resultForModifyMember > 0) {
+				System.out.println(CLASS_NAME.concat("MEMBER MODIFY SUCCESS!!"));
+				nextPage = generateViewName("/member_modify_ok");
+				
+			} else {
+				System.out.println(CLASS_NAME.concat("MEMBER MODIFY FAIL!!"));
+				nextPage = generateViewName("/member_modify_ng");			
+			}
+			
+			break;
+			
+		case MemberConfig.MEMBER_DELETE_FORM:
+			System.out.println(CLASS_NAME.concat(MemberConfig.MEMBER_DELETE_FORM));
+			nextPage = generateViewName("/delete_form");
+			
+			break;
+			
+		case MemberConfig.MEMBER_DELETE_CONFIRM:
+			System.out.println(CLASS_NAME.concat(MemberConfig.MEMBER_DELETE_CONFIRM));
+			
+			memberService = new MemberService(new MemberDao());
+			int resultForDelete = memberService.deleteMember(request, response);
+			
+			if(resultForDelete > 0) {
+				System.out.println(CLASS_NAME.concat("MEMBER DELETE SUCCESS!!"));
+				nextPage = generateViewName("/member_delete_ok");
+				
+			} else {
+				System.out.println(CLASS_NAME.concat("MEMBER DELETE FAIL!!"));
+				nextPage = generateViewName("/member_delete_ng");
+				
+			}
 			
 			break;
 		}
@@ -111,9 +154,10 @@ public class MemberController extends HttpServlet {
 	}
 
 	
-	private String generateViewName(String string) {
+	private String generateViewName(String viewName) {
 		
-		return null;
+		return MemberConfig.DEFAULT_VIEW_PATH.concat(viewName).
+				concat(MemberConfig.DEFAULT_VIEW_SUFFIX);
 	}
 
 
